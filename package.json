@@ -1,0 +1,21 @@
+{
+  "name": "vercel-hono-test",
+  "type": "module",
+  "scripts": {
+    "start": "vercel dev",
+    "deploy": "vercel"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^1.1.20",
+    "@rowanmanning/feed-parser": "^2.0.0",
+    "@vercel/functions": "^2.0.0",
+    "ai": "^4.1.54",
+    "grammy": "^1.35.0",
+    "hono": "^4.7.4",
+    "rss-parser": "^3.13.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "vercel": "^32.4.1"
+  }
+}
