@@ -333,14 +333,15 @@ export async function generateChannelShare(channelLink: string) {
 1. Mix languages: 70% Sinhala, 30% English (use English primarily for tech terms)
 2. Highlight that the channel is fully automated, providing tech updates, weekly recaps, and AI insights
 3. Use an informal, conversational tone throughout - write like you're messaging a friend
-4. Include some personality and humor where appropriate
-5. Explain the value of accessing tech content in Sinhala
-6. Emphasize the community aspect and encourage discussions
-7. Include a clear call-to-action to join and share with friends
+4. Avoid overly enthusiastic or "cringe" introductions
+5. Include some personality and humor where appropriate
+6. Explain the value of accessing tech content in Sinhala
+7. Emphasize the community aspect and encourage discussions
+8. Include a clear call-to-action to join and share with friends
 9. Use 2-3 appropriate emojis (but don't overdo it)
 10. Keep content under 1024 characters
 11. Avoid Singlish (English words written in Sinhala script)
-12. Avoid using the word "මචංලා", "ආයුබෝවන්"
+12. Avoid using the word "මචංලා", "ආයුබෝවන්", "හලෝ යාළුවනේ"
 13. Use an energetic and modern tone that feels genuine, not corporate
 14. Don't include "Join now: [Telegram Channel Link]"
 15. Avoid using '&' in the englishTitle

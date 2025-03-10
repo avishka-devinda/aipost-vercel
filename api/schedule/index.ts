@@ -18,9 +18,9 @@ app.get('/schedule', async (c) => {
     const schedule = {
         monday: 'share',//'tech-news',
         tuesday: 'tech-fun-facts',
-        wednesday: 'share',
+        wednesday: 'industry-insights',
         thursday: 'tool-review',
-        friday: 'share-delete',
+        friday: 'myth',
         saturday: 'personal-story',
         sunday: 'weekly-think',
     }
@@ -49,7 +49,7 @@ app.get('/schedule', async (c) => {
             const formattedMessage = escapeMarkdownV2(channelShare.message);
             const fullMessage = `${formattedMessage}\n\n${escapeMarkdownV2(TELEGRAM_CHANNEL_LINK)}\n\n${escapeMarkdownTags(`${channelShare.hashtags}`)}`;            
             const encodedTitle = encodeURIComponent(channelShare.englishTitle);
-            const ogurl = `https://techpost-og.vercel.app/og?title=${encodedTitle}`;
+            const ogurl = `https://techpost-og.vercel.app/share?title=${encodedTitle}`;
             const sentMessage = await bot.api.sendPhoto(TELEGRAM_CHANNEL_ID, ogurl, {
                 caption: fullMessage,
                 parse_mode: "MarkdownV2",
