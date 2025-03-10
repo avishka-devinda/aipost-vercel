@@ -33,6 +33,18 @@ export const thoughtCommentaryTool = tool({
   execute: async ({ commentary, tone }) => ({ commentary, tone }),
 });
 
+
+export const weeklyAnalysisTool = tool({
+  description: "Generate a weekly tech news analysis",
+  parameters: z.object({
+    analysis: z.string().describe("Analysis of the week's tech news trends and insights"),
+  }),
+  execute: async ({ analysis }) => ({ analysis }),
+});
+
+
+
+
 // export async function generateTechPost(newsContent: string,headline: string) {
 //   const userMessage: CoreMessage = {
 //     role: "user",
@@ -189,3 +201,112 @@ export async function generateThoughtCommentary(previousPostContent: string) {
 
   return aiResponse.toolResults[0].result;
 }
+
+
+
+export async function generateWeeklyAnalysis(weeklyPosts: { feedTitle: string; feedDescription: string }[]) {
+  const combinedContent = weeklyPosts
+    .map(post => `Title: ${post.feedTitle}\nDescription: ${post.feedDescription}`)
+    .join('\n\n');
+
+  //  console.log({combinedContent})
+
+  // const userMessage: CoreMessage = {
+  //   role: "user",
+  //   content: `
+  //     Analyze these tech news posts from the past week and provide insights.
+
+  //     Guidelines:
+  //     - Mix languages: 70% Sinhala, 30% English
+  //     - Identify key trends and patterns
+  //     - Highlight the most significant developments
+  //     - Add thoughtful predictions or implications
+  //     - Keep technical terms in English
+  //     - Provide Sinhala translations for technical terms
+  //     - Make it engaging and insightful
+  //     - No Hindi terms
+
+  //     Weekly Posts:
+  //     ${combinedContent}
+  //   `,
+
+  const userMessage: CoreMessage = {
+    role: "user",
+    content: `
+ You are the admin of the "Way of Mando" Telegram channel, which shares Sinhala tech updates. When writing weekly analysis posts, please:
+
+1. Write in a natural, human-like tone that avoids sounding artificial
+2. Mix Sinhala (70%) and English (30%) - use English verbs and nouns where appropriate
+3. Avoid overly enthusiastic or "cringe" introductions
+4. Summarize any content we provide into this Sinhala/English format
+5. Do not mention "folder phones" in your content
+6. We don't have a discussion area, so never ask communication questions like "මේ ගැන ඔයාලගේ අදහස් මොනවද?" or "මේක ගැන මොකද හිතන්නේ? 🤔" or "Comment section එකේ comment එකක් දාගෙන යන්න! 👇"
+7. Maintain a friendly, conversational tone appropriate for a tech channel
+8. Never mention being an AI or that the post was AI-generated
+9. Do not write any Hindi content
+10. Do not use Singlish (English words written in Sinhala script) - only use proper Sinhala and proper English
+11. Do not use any emojis in the content
+12. Keep the tone professional and avoid greetings
+13. Use "AKA" in uppercase when referring to alternative names (not lowercase "aka")
+14. Content should not exceed 3024 characters total
+15. Include a weekly analysis summarizing what happened this week in tech and your thoughts about these developments
+
+Weekly Posts:
+${combinedContent}
+
+    `,
+  };
+
+  const aiModel = google("gemini-1.5-pro-latest");
+  const aiResponse = await generateText({
+    model: aiModel,
+    messages: [userMessage],
+    tools: { weeklyAnalysis: weeklyAnalysisTool },
+    toolChoice: "required",
+  });
+
+  return aiResponse.toolResults[0].result;
+}
+
+
+
+export const top3HeadlinesTool = tool({
+  description: "Select top 3 most significant tech headlines",
+  parameters: z.object({
+    headlines: z.array(z.string()).describe("Top 3 selected headlines with brief justification in English Only"),
+  }),
+  execute: async ({ headlines }) => ({ headlines }),
+});
+
+export async function chooseTop3WeeklyRecap(weeklyPosts: { feedTitle: string }[]) {
+  const userMessage: CoreMessage = {
+    role: "user",
+    content: `
+      Analyze these tech headlines and select the top 3 most significant ones.
+      
+      Guidelines:
+      - Choose based on:
+        1. Technological impact and innovation
+        2. Market significance and industry influence
+        3. User/consumer relevance
+      - languages English
+      - Provide Sinhala translations for technical terms
+      - Make it engaging and insightful
+      - No Hindi terms
+      
+      Weekly Headlines:
+      ${weeklyPosts.map(post => post.feedTitle).join('\n')}
+    `,
+  };
+
+  const aiModel = google("gemini-2.0-flash-001");
+  const aiResponse = await generateText({
+    model: aiModel,
+    messages: [userMessage],
+    tools: { top3Headlines: top3HeadlinesTool },
+    toolChoice: "required",
+  });
+
+  return aiResponse.toolResults[0].result;
+}
+
