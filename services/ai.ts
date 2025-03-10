@@ -310,3 +310,53 @@ export async function chooseTop3WeeklyRecap(weeklyPosts: { feedTitle: string }[]
   return aiResponse.toolResults[0].result;
 }
 
+
+
+export const channelShareTool = tool({
+  description: "Generate a channel sharing post",
+  parameters: z.object({
+    englishTitle: z.string().describe("Engaging English title for the channel share and Avoid using '&'"),
+    message: z.string().describe("Channel sharing message with call-to-action"),
+    hashtags: z.string().describe("Hashtags for the channel share include #WayOfMando #Share #Tech #Srilanka #AI too"),
+   // benefits: z.array(z.string()).describe("Key benefits of joining the channel"),
+  }),
+  execute: async ({ englishTitle, message, hashtags }) => ({ englishTitle, message, hashtags }),
+});
+
+export async function generateChannelShare(channelLink: string) {
+  
+    const userMessage: CoreMessage = {
+      role: "assistant",
+      content: `
+  Create an engaging announcement for Sri Lanka's first AI-powered Telegram tech channel, 'Way of Mando.' The post should:
+
+1. Mix languages: 70% Sinhala, 30% English (use English primarily for tech terms)
+2. Highlight that the channel is fully automated, providing tech updates, weekly recaps, and AI insights
+3. Use an informal, conversational tone throughout - write like you're messaging a friend
+4. Include some personality and humor where appropriate
+5. Explain the value of accessing tech content in Sinhala
+6. Emphasize the community aspect and encourage discussions
+7. Include a clear call-to-action to join and share with friends
+9. Use 2-3 appropriate emojis (but don't overdo it)
+10. Keep content under 1024 characters
+11. Avoid Singlish (English words written in Sinhala script)
+12. Avoid using the word "මචංලා", "ආයුබෝවන්"
+13. Use an energetic and modern tone that feels genuine, not corporate
+14. Don't include "Join now: [Telegram Channel Link]"
+15. Avoid using '&' in the englishTitle
+16. dont include hashtags in content
+
+The post should feel like it's coming from a real tech enthusiast inviting friends to join a cool community. and follow the rules! `
+    };
+  //  8. End with the channel link: ${channelLink}
+
+  const aiModel = google("gemini-1.5-pro-latest");
+  const aiResponse = await generateText({
+    model: aiModel,
+    messages: [userMessage],
+    tools: { channelShare: channelShareTool },
+    toolChoice: "required",
+  });
+
+  return aiResponse.toolResults[0].result;
+}

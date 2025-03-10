@@ -9,6 +9,10 @@
     {
       "path": "/api/feedpost?key=251468",
       "schedule": "55 1 * * *"
+    },
+    {
+      "path": "/api/feedpost?key=251468",
+      "schedule": "07 11 * * *"
     }
   ]
 }
