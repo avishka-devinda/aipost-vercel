@@ -1,11 +1,11 @@
 import { Hono } from 'hono'
 import { handle } from 'hono/vercel'
 import { generateThoughtCommentary, generateWeeklyAnalysis, generateChannelShare } from '../../services/ai.js'
-import { getLastWeekPosts } from '../../services/feedService.js'
+import { getLastWeekPosts, getLatestPost } from '../../services/feedService.js'
 import { TELEGRAM_CHANNEL_ID } from "../../config/index.js"
 import { bot } from "../../services/telegram.js"
 import { escapeMarkdownTags, escapeMarkdownV2 } from "../../utils/formatters.js"
-import { createSharedPost, deleteSharedPost, getLatestPost } from '../../services/sharedPostService.js'
+import { createSharedPost, deleteSharedPost, getLatestSharedPost } from '../../services/sharedPostService.js'
 
 const TELEGRAM_CHANNEL_LINK = 't.me/WayOfMando';
 
@@ -18,7 +18,7 @@ app.get('/schedule', async (c) => {
     const schedule = {
         monday: 'share',//'tech-news',
         tuesday: 'share-delete', //'tech-fun-facts',
-        wednesday: 'industry-insights',
+        wednesday: 'share',//'industry-insights',
         thursday: 'share',//'tool-review',
         friday: 'myth',
         saturday: 'personal-story',
@@ -33,8 +33,17 @@ app.get('/schedule', async (c) => {
     const dayName = dayMap[today];
     const scheduleType = schedule[dayName];
 
-    const postdata = `Meta may have caved on their content moderation policies for the sake of "free speech", but there's a world of other Big Tech companies out there – and more social media platforms for conservatives to de-censor. On Thursday, Rep. Jim Jordan subpoenaed Alphabet, the parent company of Google, demanding documents that show whether YouTube removed`;
 
+
+
+const latestPost = await getLatestPost();
+    if (!latestPost) {
+        return c.json({ error: 'No posts found' }, 404);
+    }
+    
+    const { feedTitle, feedDescription, aiContent, postLink, createdAt } = latestPost;
+    
+    
     try {
         let response;
         
@@ -64,7 +73,7 @@ app.get('/schedule', async (c) => {
             response = { message: scheduleType, content: "Post shared successfully" };
         } else if (scheduleType === 'share-delete') {
             // Delete post on Friday
-            const latestPost = await getLatestPost();
+            const latestPost = await getLatestSharedPost();
             if (latestPost) {
                 await bot.api.deleteMessage(latestPost.channelId, latestPost.messageId);
                 await deleteSharedPost(latestPost.id);
@@ -73,7 +82,7 @@ app.get('/schedule', async (c) => {
                 response = { message: scheduleType, content: "No shared posts found" };
             }
         } else {
-            const thoughtai = await generateThoughtCommentary(postdata);
+            const thoughtai = await generateThoughtCommentary(aiContent);
             console.log('AI Generated Thought:', thoughtai);
             response = { message: scheduleType, content: thoughtai };
         }

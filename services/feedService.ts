@@ -99,3 +99,28 @@ export async function getLastWeekPostsTitle() {
     throw error;
   }
 }
+
+
+
+export async function getLatestPost() {
+  try {
+    const latestPost = await prisma.feed.findFirst({
+      orderBy: { createdAt: 'desc' },
+      select: {
+        feedTitle: true,
+        feedDescription: true,
+        feedContent: true,
+        feedSummary: true,
+        aiHeadline: true,
+        aiContent: true,
+        postLink: true,
+        createdAt: true
+      }
+    });
+
+    return latestPost;
+  } catch (error) {
+    console.error('Error getting latest shared post:', error);
+    throw error;
+  }
+}
