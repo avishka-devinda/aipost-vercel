@@ -6,7 +6,7 @@ export const techPostTool = tool({
   description: "Generate a tech update post",
   parameters: z.object({
     headline: z.string().describe("Headline of the post").max(200),
-    body: z.string().describe("Main content of the post").max(1024),
+    body: z.string().describe("Main content of the post Mix Sinhala (70%) and English (30%) - use English verbs and nouns where appropriate").max(1024),
     EnglishTitle: z.string().describe("Englisj Title of the post"),
     hashtags: z.string().describe("Tags for the post and include #WayOfMando").max(200),
   }),
@@ -135,12 +135,14 @@ export async function generateTechPost(newsContent: string, headline: string) {
       6. Remember our channel has no comment section, so avoid phrases like "මේ ගැන මොකද හිතෙන්නේ? Comment section එකේ comment එකක් දාගෙන යන්න! 👇"
       7. Maintain a friendly, conversational tone appropriate for a tech channel
       8. Never mention being an AI or that the post was AI-generated
-      9. Do not write any Hindi content
+      9. Do not write any Hindi content or tamil content
       10. Do not use Singlish (English words written in Sinhala script) - only use proper Sinhala and proper English
       11. Do not use any emojis in the content
       12. Keep the tone professional and avoid greetings
       13. Use "AKA" in uppercase when referring to alternative names (not lowercase "aka")
       14. Content should not exceed 1024 characters total
+      15. Do not use singlish
+      16. Avoid using hashtags
 
       Article headline: ${headline}
       English Title: ${headline}
@@ -150,7 +152,7 @@ export async function generateTechPost(newsContent: string, headline: string) {
   };
 
   // 14: content should be max 1024 characters
-
+//"gemini-2.0-flash-001"
   const aiModel = google("gemini-1.5-pro-latest");
   const aiResponse = await generateText({
     model: aiModel,
