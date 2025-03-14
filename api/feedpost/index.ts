@@ -10,7 +10,8 @@ import {
 import { bot } from "../../services/telegram.js";
 import { TELEGRAM_CHANNEL_ID, CRONJOB_API_KEY } from "../../config/index.js";
 import { getTodayPostType } from "../../utils/helpers.js";
-import { saveFeedData } from "../../services/feedService.js";
+import { getLastWeekPosts, getLastWeekPostsTitle, saveFeedData } from "../../services/feedService.js";
+import { generateWeeklyRecap } from "../../services/weeklyRecapService.js";
 
 const app = new Hono().basePath("/api");
 
@@ -30,6 +31,33 @@ app.get("/feedpost", async (c) => {
       },
       401
     );
+  }
+
+  // Check if it's Sunday
+  const today = new Date();
+  if (today.getDay() === 5) { // 0 represents Sunday
+    try {
+      const weeklyPosts = await getLastWeekPosts();
+      const weeklyPostsTitle = await getLastWeekPostsTitle();
+
+      if (!weeklyPosts || weeklyPosts.length === 0) {
+        return c.json({
+          success: false,
+          message: "No posts found for the last week"
+        }, 404);
+      }
+
+      const result = await generateWeeklyRecap(weeklyPosts, weeklyPostsTitle);
+
+      return c.json({ 
+        success: true, 
+        message: "Successfully sent the weekly recap",
+        post_details: result
+      }, 200);
+    } catch (error) {
+      console.error("Error:", error);
+      return c.text("Error processing weekly recap", 500);
+    }
   }
 
   const todayPostType = getTodayPostType();
