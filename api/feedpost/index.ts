@@ -35,7 +35,7 @@ app.get("/feedpost", async (c) => {
 
   // Check if it's Sunday
   const today = new Date();
-  if (today.getDay() === 5) { // 0 represents Sunday
+  if (today.getDay() === 0) { // 0 represents Sunday
     try {
       const weeklyPosts = await getLastWeekPosts();
       const weeklyPostsTitle = await getLastWeekPostsTitle();
