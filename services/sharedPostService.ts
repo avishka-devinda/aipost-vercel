@@ -68,17 +68,17 @@ export async function getLatestSharedPost() {
 
 
 
-export async function getLatestFeedPost() {
-  try {
-    const latestPost = await prisma.feed.findFirst({
-      orderBy: { createdAt: 'desc' }
-    });
+// export async function getLatestFeedPost() {
+//   try {
+//     const latestPost = await prisma.feed.findFirst({
+//       orderBy: { createdAt: 'desc' }
+//     });
 
-    console.log(latestPost)
-    const data = latestPost?.feedSummary || ''
-    return data;
-  } catch (error) {
-    console.error('Error getting latest feed post:', error);
-    throw error;
-  }
-}
+//     console.log(latestPost)
+//     const data = latestPost?.feedSummary || ''
+//     return data;
+//   } catch (error) {
+//     console.error('Error getting latest feed post:', error);
+//     throw error;
+//   }
+// }

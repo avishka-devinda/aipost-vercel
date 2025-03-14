@@ -19,8 +19,8 @@ app.get('/schedule', async (c) => {
         monday: 'share',//'tech-news',
         tuesday: 'share-delete', //'tech-fun-facts',
         wednesday: 'share',//'industry-insights',
-        thursday: 'share',//'tool-review',
-        friday: 'myth',
+        thursday: 'share-delete',//'tool-review',
+        friday: 'share',//'myth',
         saturday: 'personal-story',
         sunday: 'weekly-think',
     }

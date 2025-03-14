@@ -6,109 +6,71 @@ import { waitUntil } from "@vercel/functions";
 type FeedCategory = string | { term?: string; $?: { term: string } };
 
 export async function fetchLatestTechNews() {
-  // Create a promise for background processing
-  const backgroundProcessing = new Promise(async (resolve) => {
-    try {
-      // Fetch the RSS feed
-      const response = await fetch(RSS_FEED_URL);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const xmlText = await response.text();
-
-      // Parse the feed using @rowanmanning/feed-parser
-      const feed = parseFeed(xmlText);
-
-      // Filter out items with political categories
-      const nonPoliticalItems = feed.items.filter((item) => {
-        // Your existing filtering logic
-        // ...
-      });
-
-      // Additional background processing, logging, etc.
-      console.log(
-        `Processed ${feed.items.length} items, found ${nonPoliticalItems.length} non-political items`
-      );
-
-      //resolve();
-    } catch (error) {
-      console.error("Error in background processing:", error);
-      // resolve(); // Resolve even on error to ensure the promise completes
-    }
-  });
+  // Background processing promise
+  
 
   try {
-    // Main function execution
     const response = await fetch(RSS_FEED_URL);
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
     const xmlText = await response.text();
     const feed = parseFeed(xmlText);
 
-    // Your existing filtering logic
-    const nonPoliticalItems = feed.items.filter((item) => {
-      // Check if the item has categories
-      if (!item.categories || !Array.isArray(item.categories)) {
-        return true; // Include items without categories
-      }
+    // Step 1: Remove Politics & Policy categories
+    const filteredItems = feed.items.filter((item) => {
+      if (!item.categories || !Array.isArray(item.categories)) return true;
 
-      // Filter out items that have Politics or Policy categories
       return !item.categories.some((category: FeedCategory) => {
-        // Handle string categories
         if (typeof category === "string") {
+          return category === "Politics" || category === "Policy" || category === "Movie Review" || category === "Buying Guide";
+        }
+        if (category && typeof category === "object") {
           return (
-            category === "Poliics" ||
-            category === "Polcy" ||
-            category === "Reviews"
+            category.term === "Politics" ||
+            category.term === "Policy" ||
+            category.term === "Movie Review" ||
+            category.term === "Buying Guide" ||
+            (category.$ && (category.$.term === "Politics" || category.$.term === "Policy"|| category.$.term === "Movie Review"|| category.$.term === "Buying Guide"))
           );
         }
-
-        // Handle object with term property
-        if (category && typeof category === "object") {
-          if (category.term) {
-            return (
-              category.term === "Potics" ||
-              category.term === "Polcy" ||
-              category.term === "Reviews"
-            );
-          }
-
-          if (category.$ && category.$.term) {
-            return (
-              category.$.term === "Polics" ||
-              category.$.term === "Poicy" ||
-              category.$.term === "Reviews"
-            );
-          }
-        }
-
         return false;
       });
     });
 
-    const latestNonPoliticalItem = nonPoliticalItems[0];
+    // Step 2: Include if category is Tech OR News (or both)
+    const techNewsItems = filteredItems.filter((item) => {
+      if (!item.categories || !Array.isArray(item.categories)) return false;
 
-    if (!latestNonPoliticalItem) {
-      throw new Error("No non-political feed items found");
-    }
+      return item.categories.some((category: FeedCategory) => {
+        if (typeof category === "string") {
+          return category === "Tech" || category === "News"; // Accept if either is present
+        }
+        if (category && typeof category === "object") {
+          return (
+            category.term === "Tech" ||
+            category.term === "News" ||
+            (category.$ && (category.$.term === "Tech" || category.$.term === "News"))
+          );
+        }
+        return false;
+      });
+    });
+
+    const latestTechNewsItem = techNewsItems[0];
+
+    if (!latestTechNewsItem) throw new Error("No Tech/News feed items found");
 
     // Clean and prepare the content
-    const cleanedContent = cleanContent(latestNonPoliticalItem.content || "");
-    const title = escapeMarkdownV2(latestNonPoliticalItem.title || "No Title");
+    const cleanedContent = cleanContent(latestTechNewsItem.content || "");
+    const title = escapeMarkdownV2(latestTechNewsItem.title || "No Title");
     const content = escapeMarkdownV2(cleanedContent);
 
-    // Use waitUntil for the background processing
-    waitUntil(backgroundProcessing);
+    // Use waitUntil for background processing
+   // waitUntil(backgroundProcessing);
 
-    // Return the formatted item data
     return {
       title,
-      description: latestNonPoliticalItem.description,
+      description: latestTechNewsItem.description,
       content,
       contentLength: cleanedContent.length,
     };
