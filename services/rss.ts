@@ -22,7 +22,7 @@ export async function fetchLatestTechNews() {
 
       return !item.categories.some((category: FeedCategory) => {
         if (typeof category === "string") {
-          return category === "Politics" || category === "Policy" || category === "Movie Review" || category === "Buying Guide";
+          return category === "Politics" || category === "Policy" || category === "Movie Review" || category === "Buying Guide" || category === "Deals";
         }
         if (category && typeof category === "object") {
           return (
@@ -30,7 +30,9 @@ export async function fetchLatestTechNews() {
             category.term === "Policy" ||
             category.term === "Movie Review" ||
             category.term === "Buying Guide" ||
-            (category.$ && (category.$.term === "Politics" || category.$.term === "Policy"|| category.$.term === "Movie Review"|| category.$.term === "Buying Guide"))
+            category.term === "Deals" ||
+
+            (category.$ && (category.$.term === "Politics" || category.$.term === "Policy"|| category.$.term === "Movie Review"|| category.$.term === "Buying Guide"|| category.$.term === "Deals"))
           );
         }
         return false;

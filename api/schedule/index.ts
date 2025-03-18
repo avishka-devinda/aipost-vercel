@@ -51,6 +51,14 @@ const latestPost = await getLatestPost();
             const weeklyPosts = await getLastWeekPosts();
             const weeklyAnalysis = await generateWeeklyAnalysis(weeklyPosts);
             console.log('AI Generated Weekly Analysis:', weeklyAnalysis);
+            const formattedMessage = escapeMarkdownV2(weeklyAnalysis.analysis);
+
+            await bot.api.sendMessage(TELEGRAM_CHANNEL_ID, formattedMessage,{
+                parse_mode: "MarkdownV2",
+            });
+
+
+
             response = { message: scheduleType, content: weeklyAnalysis.analysis };
         } else if (scheduleType === 'share') {
             // Share post on Wednesday
