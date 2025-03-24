@@ -17,10 +17,10 @@ app.get('/schedule', async (c) => {
 
     const schedule = {
         monday: 'share',//'tech-news',
-        tuesday: 'share-delete', //'tech-fun-facts',
-        wednesday: 'share',//'industry-insights',
+        tuesday: '', //'tech-fun-facts',
+        wednesday: '',//'industry-insights',
         thursday: 'share-delete',//'tool-review',
-        friday: 'share',//'myth',
+        friday: '',//'myth',
         saturday: 'personal-story',
         sunday: 'weekly-think',
     }

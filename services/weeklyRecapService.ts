@@ -2,7 +2,14 @@ import { bot } from "./telegram.js";
 import { escapeMarkdownV2 } from "../utils/formatters.js";
 import { TELEGRAM_CHANNEL_ID } from "../config/index.js";
 
-export async function generateWeeklyRecap(weeklyPosts: any[], weeklyPostsTitle: any[]) {
+type weeklyPostType = {
+  feedTitle: string,
+  aiHeadline: string,
+  postLink: string,
+  createdAt: Date
+}
+
+export async function generateWeeklyRecap(weeklyPosts: weeklyPostType[], weeklyPostsTitle: any[]) {
   if (!weeklyPosts || weeklyPosts.length === 0) {
     throw new Error("No posts found for the last week");
   }
@@ -18,7 +25,7 @@ export async function generateWeeklyRecap(weeklyPosts: any[], weeklyPostsTitle: 
       month: 'short',
       day: 'numeric'
     });
-    recapMessage += `${index + 1}\\. [${escapeMarkdownV2(post.feedTitle)}](${post.postLink}) \n`;
+    recapMessage += `${index + 1}\\. [${escapeMarkdownV2(post.aiHeadline)}](${post.postLink}) \n`;
   });
 
   // Get top 3 headlines for OG image

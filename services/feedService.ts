@@ -89,6 +89,7 @@ export async function getLastWeekPostsTitle() {
       },
       select: {
         feedTitle: true,
+        aiHeadline: true,
         postLink: true,
         createdAt: true
       }

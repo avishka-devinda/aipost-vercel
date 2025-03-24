@@ -7,7 +7,6 @@ type FeedCategory = string | { term?: string; $?: { term: string } };
 
 export async function fetchLatestTechNews() {
   // Background processing promise
-  
 
   try {
     const response = await fetch(RSS_FEED_URL);
@@ -22,7 +21,15 @@ export async function fetchLatestTechNews() {
 
       return !item.categories.some((category: FeedCategory) => {
         if (typeof category === "string") {
-          return category === "Politics" || category === "Policy" || category === "Movie Review" || category === "Buying Guide" || category === "Deals";
+          return (
+            category === "Politics" ||
+            category === "Policy" ||
+            category === "Movie Review" ||
+            category === "Buying Guide" ||
+            category === "Deals" ||
+            category === "Gadgets" ||
+            category === "Smart Home" 
+          );
         }
         if (category && typeof category === "object") {
           return (
@@ -31,8 +38,17 @@ export async function fetchLatestTechNews() {
             category.term === "Movie Review" ||
             category.term === "Buying Guide" ||
             category.term === "Deals" ||
-
-            (category.$ && (category.$.term === "Politics" || category.$.term === "Policy"|| category.$.term === "Movie Review"|| category.$.term === "Buying Guide"|| category.$.term === "Deals"))
+            category.term === "Gadgets" ||
+            category.term === "Smart Home" ||
+            (category.$ &&
+              (category.$.term === "Politics" ||
+                category.$.term === "Policy" ||
+                category.$.term === "Movie Review" ||
+                category.$.term === "Buying Guide" ||
+                category.$.term === "Deals" ||
+                category.$.term === "Gadgets" ||
+                category.$.term === "Smart Home" 
+              ))
           );
         }
         return false;
@@ -51,7 +67,8 @@ export async function fetchLatestTechNews() {
           return (
             category.term === "Tech" ||
             category.term === "News" ||
-            (category.$ && (category.$.term === "Tech" || category.$.term === "News"))
+            (category.$ &&
+              (category.$.term === "Tech" || category.$.term === "News"))
           );
         }
         return false;
@@ -68,7 +85,7 @@ export async function fetchLatestTechNews() {
     const content = escapeMarkdownV2(cleanedContent);
 
     // Use waitUntil for background processing
-   // waitUntil(backgroundProcessing);
+    // waitUntil(backgroundProcessing);
 
     return {
       title,
