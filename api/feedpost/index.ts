@@ -63,10 +63,34 @@ app.get("/feedpost", async (c) => {
   const todayPostType = getTodayPostType();
   const techNews = await fetchLatestTechNews();
 
-  if (!techNews) {
-    return c.text("Failed to fetch tech news", 500);
+  if (!techNews.success) {
+    return c.json({ success: false, message:techNews.message}, 500);
   }
 
+  
+  if (!techNews) {
+    return c.json({ success: false, message: "Failed to fetch tech news" }, 500);
+  }
+
+
+
+  const content = techNews.content
+
+  function extractSrcWithSyndicationRights(htmlContent: string) {
+    // Match the img tag that contains data-has-syndication-rights="1" and extract the src
+    const regex = /<img.*?data-has-syndication-rights="1".*?src="([^"]*)"/;
+    const match = htmlContent.match(regex);
+    
+    if (match && match[1]) {
+        return match[1];
+    }
+    return null;
+}
+
+const srcLink = extractSrcWithSyndicationRights(techNews.orignalContent || '');
+
+console.log(srcLink)
+ 
   try {
     const toolResult = await generateTechPost(techNews.content, techNews.title);
 
@@ -117,8 +141,16 @@ app.get("/feedpost", async (c) => {
     console.log({ englishTitle });
 
     const encodedTitle = encodeURIComponent(englishTitle);
-    const ogurl = `https://techpost-og.vercel.app/og?title=${encodedTitle}`;
 
+    let ogurl;
+    if (srcLink){
+      ogurl = `https://techpost-og.vercel.app/tech-img-2?title=${encodedTitle}&image=${srcLink}`;
+
+    }
+    else{
+    ogurl = `https://techpost-og.vercel.app/og?title=${encodedTitle}`;
+
+    }
     // Send to channel
     // await bot.api.sendMessage(TELEGRAM_CHANNEL_ID, message, {
     //   parse_mode: "MarkdownV2",

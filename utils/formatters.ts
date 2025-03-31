@@ -1,6 +1,10 @@
 export function escapeMarkdownV2(text: string) {
     return text.replace(/([_*[\]()~>#+\-=|{}.!])/g, "\\$1");
   }
+
+  export function escapeMarkdownV2Recap(text: string) {
+    return text.replace(/([_*\[\]()~`>#+\-=|{}!\\\.\/])/g, '\\$1');
+ }
   
   export function cleanContent(content: string): string {
     if (!content) return "";

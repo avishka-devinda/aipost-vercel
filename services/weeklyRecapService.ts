@@ -25,7 +25,7 @@ export async function generateWeeklyRecap(weeklyPosts: weeklyPostType[], weeklyP
       month: 'short',
       day: 'numeric'
     });
-    recapMessage += `${index + 1}\\. [${escapeMarkdownV2(post.aiHeadline)}](${post.postLink}) \n`;
+    recapMessage += `${index + 1}\\. [${post.aiHeadline}](${post.postLink}) \n`;
   });
 
   // Get top 3 headlines for OG image
@@ -37,8 +37,9 @@ export async function generateWeeklyRecap(weeklyPosts: weeklyPostType[], weeklyP
   const encodedTitle2 = encodeURIComponent(englishTitle2);
   const encodedTitle3 = encodeURIComponent(englishTitle3);
 
-  const ogurl = `https://techpost-og.vercel.app/weekly-recap?title1=${encodedTitle1}&title2=${encodedTitle2}&title3=${encodedTitle3}`;
+  const ogurl = `https://techpost-og.vercel.app/weekly-recap-2?title1=${encodedTitle1}&title2=${encodedTitle2}&title3=${encodedTitle3}`;
 
+  console.log(ogurl)
   const sentMessage = await bot.api.sendPhoto(TELEGRAM_CHANNEL_ID, ogurl, {
     caption: recapMessage,
     parse_mode: "MarkdownV2",

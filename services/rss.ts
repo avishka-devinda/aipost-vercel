@@ -28,7 +28,8 @@ export async function fetchLatestTechNews() {
             category === "Buying Guide" ||
             category === "Deals" ||
             category === "Gadgets" ||
-            category === "Smart Home" 
+            category === "Smart Home" ||
+            category === "Reviews"
           );
         }
         if (category && typeof category === "object") {
@@ -40,6 +41,7 @@ export async function fetchLatestTechNews() {
             category.term === "Deals" ||
             category.term === "Gadgets" ||
             category.term === "Smart Home" ||
+            category.term === "Reviews" ||
             (category.$ &&
               (category.$.term === "Politics" ||
                 category.$.term === "Policy" ||
@@ -47,8 +49,8 @@ export async function fetchLatestTechNews() {
                 category.$.term === "Buying Guide" ||
                 category.$.term === "Deals" ||
                 category.$.term === "Gadgets" ||
-                category.$.term === "Smart Home" 
-              ))
+                category.$.term === "Smart Home" ||
+                category.$.term === "Reviews"))
           );
         }
         return false;
@@ -77,7 +79,17 @@ export async function fetchLatestTechNews() {
 
     const latestTechNewsItem = techNewsItems[0];
 
-    if (!latestTechNewsItem) throw new Error("No Tech/News feed items found");
+    if (!latestTechNewsItem) {
+      return {
+        success: false,
+        message: "No Tech/News feed items found",
+        title: "",
+        description: "",
+        content: "",
+        contentLength: "",
+        orignalContent: "",
+      };
+    }
 
     // Clean and prepare the content
     const cleanedContent = cleanContent(latestTechNewsItem.content || "");
@@ -92,6 +104,7 @@ export async function fetchLatestTechNews() {
       description: latestTechNewsItem.description,
       content,
       contentLength: cleanedContent.length,
+      orignalContent: techNewsItems[0].content,
     };
   } catch (error) {
     console.error("Error fetching RSS feed:", error);
